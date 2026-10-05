@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profile | CareerAI
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-card wide">
+
+    <h1>
+        Student Profile
+    </h1>
+
+    <p>
+        Update your information for better job recommendations.
+    </p>
+
+
+    <form method="POST">
+
+        <label>
+            Name
+        </label>
+
+        <input
+            value="{{ user['name'] }}"
+            disabled
+        >
+
+
+        <label>
+            Email
+        </label>
+
+        <input
+            value="{{ user['email'] }}"
+            disabled
+        >
+
+
+        <label>
+            Education
+        </label>
+
+        <input
+            name="education"
+            value="{{ user['education'] }}"
+            placeholder="B.Tech IT"
+        >
+
+
+        <label>
+            Skills
+        </label>
+
+        <textarea
+            name="skills"
+            rows="4"
+            placeholder="Python, HTML, CSS, JavaScript, SQL"
+        >{{ user['skills'] }}</textarea>
+
+
+        <label>
+            Target Job Role
+        </label>
+
+        <input
+            name="target_role"
+            value="{{ user['target_role'] }}"
+            placeholder="Python Developer"
+        >
+
+
+        <button
+            class="button full"
+            type="submit"
+        >
+            Save Profile
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
