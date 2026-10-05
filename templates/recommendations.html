@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+Recommendations | CareerAI
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-heading">
+
+    <h1>
+        Job Recommendations 🎯
+    </h1>
+
+    <p>
+        These recommendations are based on your
+        skills and target role.
+    </p>
+
+</div>
+
+
+<div class="job-grid">
+
+    {% for job in recommendations %}
+
+    <article class="job-card">
+
+        <div class="match">
+
+            {{ job["score"] }}% Match
+
+        </div>
+
+
+        <h2>
+            {{ job["title"] }}
+        </h2>
+
+
+        <h3>
+            {{ job["company"] }}
+            •
+            {{ job["location"] }}
+        </h3>
+
+
+        <p>
+            {{ job["description"] }}
+        </p>
+
+
+        <p>
+
+            <strong>
+                Required Skills:
+            </strong>
+
+            {{ job["skills"] }}
+
+        </p>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
