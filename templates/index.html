@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home | CareerAI
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div>
+
+        <span class="badge">
+            AI-Powered Career Guidance
+        </span>
+
+        <h1>
+            Build Your Career
+            With Smarter Placement Preparation.
+        </h1>
+
+        <p>
+            Analyze your skills, discover suitable jobs,
+            practice technical questions and prepare
+            yourself for placements.
+        </p>
+
+        <div class="actions">
+
+            <a
+                class="button"
+                href="{{ url_for('register') }}"
+            >
+                Get Started
+            </a>
+
+            <a
+                class="button secondary"
+                href="{{ url_for('login') }}"
+            >
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="hero-card">
+
+        <div class="mini-stat">
+            <strong>Skill Match</strong>
+            <span>82%</span>
+        </div>
+
+        <div class="mini-stat">
+            <strong>Resume Score</strong>
+            <span>76/100</span>
+        </div>
+
+        <div class="mini-stat">
+            <strong>Job Matches</strong>
+            <span>12+</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="cards">
+
+    <div class="card">
+
+        <h3>
+            🎯 Career Recommendation
+        </h3>
+
+        <p>
+            Find suitable job roles according
+            to your skills.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            📊 Skill Gap Analysis
+        </h3>
+
+        <p>
+            Identify skills you need to improve
+            for your target role.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            📝 Placement Quiz
+        </h3>
+
+        <p>
+            Practice technical questions and
+            check your score.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            🤖 AI Career Assistant
+        </h3>
+
+        <p>
+            Get personalized career guidance
+            using AI.
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}
