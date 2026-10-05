@@ -1,7 +1,4 @@
 import os
-from google import genai
-
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 import sqlite3
 from functools import wraps
 
@@ -14,8 +11,12 @@ from flask import (
     session,
     flash
 )
-from werkzeug.security import generate_password_hash, check_password_hash
 
+from werkzeug.security import generate_password_hash, check_password_hash
+from google import genai
+
+
+# ---------------- APP CONFIGURATION ----------------
 
 app = Flask(__name__)
 
@@ -25,6 +26,44 @@ app.secret_key = os.environ.get(
 )
 
 DATABASE = os.path.join("database", "career.db")
+
+
+# ---------------- GEMINI AI ----------------
+
+def ask_gemini(prompt):
+    """
+    Sends a prompt to Gemini and returns the AI response.
+    API key is taken securely from the GEMINI_API_KEY
+    environment variable.
+    """
+
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key:
+        return (
+            "Gemini API is not configured yet. "
+            "Please add GEMINI_API_KEY in the environment variables."
+        )
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+
+        if response.text:
+            return response.text
+
+        return "Sorry, I could not generate a response."
+
+    except Exception as error:
+        print("Gemini Error:", error)
+        return (
+            "Sorry, the AI service is temporarily unavailable. "
+            "Please try again later."
+        )
 
 
 # ---------------- DATABASE ----------------
@@ -42,7 +81,7 @@ def init_database():
     connection = get_db()
 
     connection.executescript("""
-    
+
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -81,7 +120,8 @@ def init_database():
 
     """)
 
-    # Add sample jobs only once
+    # ---------------- SAMPLE JOBS ----------------
+
     job_count = connection.execute(
         "SELECT COUNT(*) FROM jobs"
     ).fetchone()[0]
@@ -135,7 +175,8 @@ def init_database():
             jobs
         )
 
-    # Add quiz questions only once
+    # ---------------- QUIZ QUESTIONS ----------------
+
     question_count = connection.execute(
         "SELECT COUNT(*) FROM quiz_questions"
     ).fetchone()[0]
@@ -253,8 +294,15 @@ def login_required(function):
     def wrapper(*args, **kwargs):
 
         if "user_id" not in session:
-            flash("Please login first.", "warning")
-            return redirect(url_for("login"))
+
+            flash(
+                "Please login first.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("login")
+            )
 
         return function(*args, **kwargs)
 
@@ -265,7 +313,10 @@ def login_required(function):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+
+    return render_template(
+        "index.html"
+    )
 
 
 # ---------------- REGISTER ----------------
@@ -275,14 +326,31 @@ def register():
 
     if request.method == "POST":
 
-        name = request.form.get("name", "").strip()
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
 
         if not name or not email or not password:
 
-            flash("All fields are required.", "danger")
-            return render_template("register.html")
+            flash(
+                "All fields are required.",
+                "danger"
+            )
+
+            return render_template(
+                "register.html"
+            )
 
         if len(password) < 6:
 
@@ -291,13 +359,17 @@ def register():
                 "danger"
             )
 
-            return render_template("register.html")
+            return render_template(
+                "register.html"
+            )
 
         connection = get_db()
 
         try:
 
-            hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(
+                password
+            )
 
             connection.execute(
                 """
@@ -305,7 +377,11 @@ def register():
                 (name, email, password)
                 VALUES (?, ?, ?)
                 """,
-                (name, email, hashed_password)
+                (
+                    name,
+                    email,
+                    hashed_password
+                )
             )
 
             connection.commit()
@@ -315,7 +391,9 @@ def register():
                 "success"
             )
 
-            return redirect(url_for("login"))
+            return redirect(
+                url_for("login")
+            )
 
         except sqlite3.IntegrityError:
 
@@ -325,9 +403,12 @@ def register():
             )
 
         finally:
+
             connection.close()
 
-    return render_template("register.html")
+    return render_template(
+        "register.html"
+    )
 
 
 # ---------------- LOGIN ----------------
@@ -337,13 +418,24 @@ def login():
 
     if request.method == "POST":
 
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
 
         connection = get_db()
 
         user = connection.execute(
-            "SELECT * FROM users WHERE email = ?",
+            """
+            SELECT *
+            FROM users
+            WHERE email = ?
+            """,
             (email,)
         ).fetchone()
 
@@ -362,14 +454,18 @@ def login():
                 "success"
             )
 
-            return redirect(url_for("dashboard"))
+            return redirect(
+                url_for("dashboard")
+            )
 
         flash(
             "Invalid email or password.",
             "danger"
         )
 
-    return render_template("login.html")
+    return render_template(
+        "login.html"
+    )
 
 
 # ---------------- LOGOUT ----------------
@@ -384,7 +480,9 @@ def logout():
         "success"
     )
 
-    return redirect(url_for("index"))
+    return redirect(
+        url_for("index")
+    )
 
 
 # ---------------- DASHBOARD ----------------
@@ -457,11 +555,9 @@ def profile():
         connection.execute(
             """
             UPDATE users
-
             SET education = ?,
                 skills = ?,
                 target_role = ?
-
             WHERE id = ?
             """,
             (
@@ -520,7 +616,7 @@ def jobs():
     )
 
 
-# ---------------- RECOMMENDATIONS ----------------
+# ---------------- AI RECOMMENDATIONS ----------------
 
 @app.route("/recommendations")
 @login_required
@@ -530,7 +626,7 @@ def recommendations():
 
     user = connection.execute(
         """
-        SELECT skills, target_role
+        SELECT name, education, skills, target_role
         FROM users
         WHERE id = ?
         """,
@@ -542,6 +638,8 @@ def recommendations():
     ).fetchall()
 
     connection.close()
+
+    # ---------------- BASIC SKILL MATCHING ----------------
 
     student_skills = {
         skill.strip().lower()
@@ -563,10 +661,8 @@ def recommendations():
             if skill.strip()
         }
 
-        matched_skills = (
-            student_skills.intersection(
-                required_skills
-            )
+        matched_skills = student_skills.intersection(
+            required_skills
         )
 
         if required_skills:
@@ -591,12 +687,19 @@ def recommendations():
             )
 
         recommendations_data.append({
+
             "title": job["title"],
+
             "company": job["company"],
+
             "location": job["location"],
+
             "skills": job["skills"],
+
             "description": job["description"],
+
             "score": score
+
         })
 
     recommendations_data.sort(
@@ -604,9 +707,59 @@ def recommendations():
         reverse=True
     )
 
+    # ---------------- GEMINI CAREER ANALYSIS ----------------
+
+    available_jobs = "\n".join(
+        [
+            f"- {job['title']} | Skills: {job['skills']}"
+            for job in jobs_data
+        ]
+    )
+
+    ai_prompt = f"""
+You are an AI Career Guidance Assistant for a college student.
+
+Student Name:
+{user["name"]}
+
+Education:
+{user["education"] or "Not provided"}
+
+Current Skills:
+{user["skills"] or "Not provided"}
+
+Target Role:
+{user["target_role"] or "Not provided"}
+
+Available Career Roles:
+{available_jobs}
+
+Analyze the student's profile and provide practical career guidance.
+
+Give the answer in simple student-friendly language.
+
+Include:
+
+1. Best suitable career role
+2. Why this role is suitable
+3. Student's current strong skills
+4. Skills that should be improved
+5. A practical 3-month learning roadmap
+6. One suitable project idea
+7. One short interview preparation tip
+
+Do not claim that the student has experience unless it is mentioned.
+Keep the response concise and useful.
+"""
+
+    ai_recommendation = ask_gemini(
+        ai_prompt
+    )
+
     return render_template(
         "recommendations.html",
-        recommendations=recommendations_data
+        recommendations=recommendations_data,
+        ai_recommendation=ai_recommendation
     )
 
 
@@ -637,6 +790,7 @@ def quiz():
             )
 
             if selected_answer == question["answer"]:
+
                 score += 1
 
         connection.execute(
@@ -669,12 +823,25 @@ def quiz():
     )
 
 
-# ---------------- RUN ----------------
+# ---------------- DATABASE INITIALIZATION ----------------
+
+# This runs when the application starts,
+# including when deployed on Render.
+
+init_database()
+
+
+# ---------------- LOCAL RUN ----------------
 
 if __name__ == "__main__":
 
-    init_database()
-
     app.run(
+        host="0.0.0.0",
+        port=int(
+            os.environ.get(
+                "PORT",
+                5000
+            )
+        ),
         debug=True
     )
