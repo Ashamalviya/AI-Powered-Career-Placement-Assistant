@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+Quiz Result | CareerAI
+{% endblock %}
+
+
+{% block content %}
+
+<div class="result-card">
+
+    <span class="badge">
+        Quiz Completed
+    </span>
+
+    <h1>
+        Your Score
+    </h1>
+
+
+    <div class="big-score">
+
+        {{ score }}/{{ total }}
+
+    </div>
+
+
+    <p>
+
+        You answered
+
+        <strong>
+            {{ score }}
+        </strong>
+
+        out of
+
+        <strong>
+            {{ total }}
+        </strong>
+
+        questions correctly.
+
+    </p>
+
+
+    <div class="actions">
+
+        <a
+            class="button"
+            href="{{ url_for('quiz') }}"
+        >
+            Try Again
+        </a>
+
+
+        <a
+            class="button secondary"
+            href="{{ url_for('dashboard') }}"
+        >
+            Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
