@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login | CareerAI
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>
+        Welcome Back 👋
+    </h1>
+
+    <p>
+        Login to continue your placement preparation.
+    </p>
+
+
+    <form method="POST">
+
+        <label>
+            Email
+        </label>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+        >
+
+
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Your password"
+            required
+        >
+
+
+        <button
+            type="submit"
+            class="button full"
+        >
+            Login
+        </button>
+
+    </form>
+
+
+    <p class="small">
+
+        New student?
+
+        <a href="{{ url_for('register') }}">
+            Create an account
+        </a>
+
+    </p>
+
+</div>
+
+{% endblock %}
