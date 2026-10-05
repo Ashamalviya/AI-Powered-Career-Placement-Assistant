@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}
+Placement Quiz | CareerAI
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-heading">
+
+    <h1>
+        Placement Quiz 📝
+    </h1>
+
+    <p>
+        Select the correct answer.
+    </p>
+
+</div>
+
+
+<form method="POST">
+
+{% for question in questions %}
+
+<section class="question card">
+
+    <h3>
+
+        {{ loop.index }}.
+
+        {{ question["question"] }}
+
+    </h3>
+
+
+    <label>
+
+        <input
+            type="radio"
+            name="q{{ question['id'] }}"
+            value="A"
+            required
+        >
+
+        {{ question["option_a"] }}
+
+    </label>
+
+
+    <label>
+
+        <input
+            type="radio"
+            name="q{{ question['id'] }}"
+            value="B"
+        >
+
+        {{ question["option_b"] }}
+
+    </label>
+
+
+    <label>
+
+        <input
+            type="radio"
+            name="q{{ question['id'] }}"
+            value="C"
+        >
+
+        {{ question["option_c"] }}
+
+    </label>
+
+
+    <label>
+
+        <input
+            type="radio"
+            name="q{{ question['id'] }}"
+            value="D"
+        >
+
+        {{ question["option_d"] }}
+
+    </label>
+
+</section>
+
+{% endfor %}
+
+
+<button
+    class="button"
+    type="submit"
+>
+    Submit Quiz
+</button>
+
+</form>
+
+{% endblock %}
