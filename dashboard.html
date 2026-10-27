@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | CareerAI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome, {{ user["name"] }}!</h1>
+    <p>Your Career & Placement Assistant dashboard.</p>
+
+    <div class="card">
+        <h2>Available Jobs</h2>
+        <p>Total jobs available: {{ job_count }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Recent Quiz Results</h2>
+
+        {% if results %}
+            {% for result in results %}
+                <p>
+                    Score: {{ result["score"] }} /
+                    {{ result["total"] }}
+                </p>
+            {% endfor %}
+        {% else %}
+            <p>You haven't attempted a quiz yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="actions">
+        <a class="button"
+           href="{{ url_for('recommendations') }}">
+           Get AI Career Recommendations
+        </a>
+
+        <a class="button secondary"
+           href="{{ url_for('profile') }}">
+           Update Profile
+        </a>
+    </div>
+</div>
+{% endblock %}
